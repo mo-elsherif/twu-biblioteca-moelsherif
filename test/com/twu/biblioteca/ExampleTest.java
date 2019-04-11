@@ -39,10 +39,10 @@ public class ExampleTest {
     public void testViewListOfAllBooks() {
         int i=1;
         assertThat(consoleLines[i++], is(equalTo(
-                "- Harry Potter")));
+                "- Harry Potter      | J. K. Rowling        | 1990")));
         assertThat(consoleLines[i++], is(equalTo(
-                "- Lord of the Rings")));
+                "- Lord of the Rings | J. R. R. Tolkien     | 1995")));
         assertThat(consoleLines[i++], is(equalTo(
-                "- Tarzan")));
+                "- Tarzan            | Edgar Rice Burroughs | 1970")));
     }
 }
