@@ -2,33 +2,47 @@ package com.twu.biblioteca;
 
 import java.io.*;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertThat;
 
 public class ExampleTest {
+    ByteArrayOutputStream bytes;
+    PrintStream console;
+    String[] consoleLines;
 
-    @Test
-    public void test() {
-        assertEquals(1, 1);
+    @Before
+    public void setUp() {
+        bytes = new ByteArrayOutputStream();
+        console = System.out;
+        System.setOut(new PrintStream(bytes));
+        BibliotecaApp.main();
+        consoleLines = bytes.toString().split("\n");
     }
 
-
-    private static final String EOL =
-            System.getProperty("line.separator");
+    @After
+    public void tearDown() {
+        System.setOut(console);
+    }
 
     @Test
     public void testBibliothecaGreetingMessage() {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        PrintStream console = System.out;
-        try {
-            System.setOut(new PrintStream(bytes));
-            BibliotecaApp.main();
-        } finally {
-            System.setOut(console);
-        }
-        assertEquals(String.format(
-                "Welcome to Biblioteca. Your one-stop-shop for great book titles in Bangalore\n"),
-                bytes.toString());
+        assertThat(consoleLines[0], is(equalTo(
+                "Welcome to Biblioteca. Your one-stop-shop for great book titles in Bangalore")));
+    }
+
+    @Test
+    public void testViewListOfAllBooks() {
+        int i=1;
+        assertThat(consoleLines[i++], is(equalTo(
+                "- Harry Potter")));
+        assertThat(consoleLines[i++], is(equalTo(
+                "- Lord of the Rings")));
+        assertThat(consoleLines[i++], is(equalTo(
+                "- Tarzan")));
     }
 }
