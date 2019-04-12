@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.function.ToIntFunction;
 
-public class BooksPrinter {
+public class Printer {
 
     public static void printAllBooks(ArrayList<Book> books) {
         int longestNameLength = computePropertyMaxLength(books, (i -> i.getName().length()));
@@ -26,4 +26,9 @@ public class BooksPrinter {
         return String.join("", Collections.nCopies(n, " "));
     }
 
+    public static void printAllMenus(String[] menuOptions) {
+        for (int i = 0; i < menuOptions.length; i++) {
+            System.out.println(String.format("(%d) %s ",i+1,menuOptions[i]));
+        }
+    }
 }
