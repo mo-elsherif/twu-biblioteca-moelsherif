@@ -8,5 +8,7 @@ public class Messages {
     }
 
 
-
+    public static void quitMessage() {
+        System.out.println("Thank you for using our Application.");
+    }
 }

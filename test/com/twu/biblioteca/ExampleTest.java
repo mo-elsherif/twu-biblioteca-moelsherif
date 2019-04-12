@@ -2,6 +2,7 @@ package com.twu.biblioteca;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.stream.IntStream;
 
 import org.junit.After;
 import org.junit.Before;
@@ -18,12 +19,14 @@ public class ExampleTest {
     PrintStream console;
     String[] startingConsoleLines;
     ByteArrayInputStream in;
+    int menuLength;
 
     @Before
     public void setUp() {
         console = System.out;
         in = new ByteArrayInputStream(("1").getBytes());
         setBytesToOut();
+        menuLength = BibliotecaApp.menuOptions.length;
     }
 
     @After
@@ -51,7 +54,7 @@ public class ExampleTest {
     @Test
     public void testViewListOfAllBooks() {
         normalSetup();
-        int i = 2;
+        int i = menuLength + 1;
         //+System.lineSeparator()+"2"
         assertThat(startingConsoleLines[i++], is(equalTo(
                 "- Harry Potter      | J. K. Rowling        | 1990")));
@@ -73,11 +76,21 @@ public class ExampleTest {
         };
 
         for (String errorCase : errorCases) {
-            in = new ByteArrayInputStream((errorCase +System.lineSeparator() + "1").getBytes());
+            in = new ByteArrayInputStream((errorCase + System.lineSeparator() + "1").getBytes());
             BibliotecaApp.printConsoleMessages(in, System.out);
             startingConsoleLines = bytes.toString().split("\n");
-            assertThat(startingConsoleLines[2], is(equalTo(
+            assertThat(startingConsoleLines[menuLength + 1], is(equalTo(
                     "Please select a valid option!")));
         }
+    }
+
+    @Test
+    public void testQuitApplicationOnQuit() {
+        int indexQuit = menuLength; //because its always the last option
+        in = new ByteArrayInputStream((""  + indexQuit).getBytes());
+        BibliotecaApp.printConsoleMessages(in, System.out);
+        startingConsoleLines = bytes.toString().split("\n");
+        assertThat(startingConsoleLines[menuLength+1], is(equalTo(
+                "Thank you for using our Application.")));
     }
 }

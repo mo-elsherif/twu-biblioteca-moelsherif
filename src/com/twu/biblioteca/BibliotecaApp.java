@@ -9,7 +9,7 @@ public class BibliotecaApp {
 
     private static ArrayList<Book> books = BookFactory.createHardCodedBooks();
 
-    private static String[] menuOptions = {"List all books","Quit"};
+    public static String[] menuOptions = {"List all books","Quit"};
 
     public static void main(String... args) {
         printConsoleMessages(System.in,System.out);
@@ -25,8 +25,14 @@ public class BibliotecaApp {
             Printer.printAllMenus(menuOptions);
             nextLine=validInputWithErrorMessage(scan);
         } while (nextLine==null);
-        
-        Printer.printAllBooks(books);
+
+        if(nextLine==1){
+            Printer.printAllBooks(books);
+        }
+        else if (nextLine == 2)
+        {
+            Messages.quitMessage();
+        }
     }
 
     public static Integer validInputWithErrorMessage(Scanner scan){
