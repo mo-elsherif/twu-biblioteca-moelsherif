@@ -12,7 +12,7 @@ public class MovieInteractiveConsole {
             printStream.println("Please type in the name of the movie you want to borrow");
             movie = getCheckedOutMovie(printStream, scanner, movies);
         } while (movie == null);
-        movie.setCheckout(true);
+        movie.setCheckedOut(true);
     }
 
     private static Movie getCheckedOutMovie(PrintStream printStream, Scanner scanner, ArrayList<Movie> movies) {
@@ -25,7 +25,7 @@ public class MovieInteractiveConsole {
         while (scan.hasNext()) {
             String nextLine = scan.nextLine();
 
-            ArrayList<Movie> ff = movies.stream().filter(i -> i.getName().equals(nextLine) && i.isCheckout() == bookShouldBeCheckedOut).collect(Collectors.toCollection(ArrayList::new));
+            ArrayList<Movie> ff = movies.stream().filter(i -> i.getName().equals(nextLine) && i.isCheckedOut() == bookShouldBeCheckedOut).collect(Collectors.toCollection(ArrayList::new));
             if (ff.size() == 1) {
                 out.println(successMessage);
                 Movie b = ff.get(0);

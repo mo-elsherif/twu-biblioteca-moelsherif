@@ -20,7 +20,7 @@ public class Printer {
             int spacesNecessaryAfterAuthor = longestAuthorLength - book.getAuthor().length();
             out.println(String.format("- %s%s | %s%s | %d", book.getName(),
                     spaces(spacesNecessaryAfterName), book.getAuthor(), spaces(spacesNecessaryAfterAuthor)
-                    , book.getPublicationYear()));
+                    , book.getYear()));
         }
     }
 
@@ -30,7 +30,7 @@ public class Printer {
         int longestDirectorLength = computePropertyMaxLength(movies, ((ToIntFunction<? super Movie>)
                 (i -> i.getDirector().length())));
         for (Movie movie : movies) {
-           if (movie.isCheckout()) {
+           if (movie.isCheckedOut()) {
                 continue;
             }
             int spacesNecessaryAfterName = longestNameLength - movie.getName().length();

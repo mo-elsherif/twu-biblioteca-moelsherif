@@ -1,36 +1,16 @@
 package com.twu.biblioteca;
 
-public class Book {
 
-    private String name;
+public class Book extends CheckableItem {
+
     private String author;
-    private int publicationYear;
-    private boolean checkedOut;
 
-    public Book(String name, String author, int publicationYear) {
-        this.name = name;
+    public Book(String name, String author, int year) {
+        super(name, year);
         this.author = author;
-        this.publicationYear = publicationYear;
-        this.checkedOut=false;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public String getAuthor() {
         return author;
-    }
-
-    public int getPublicationYear() {
-        return publicationYear;
-    }
-
-    public boolean isCheckedOut() {
-        return checkedOut;
-    }
-
-    public void setCheckedOut(boolean checkedOut) {
-        this.checkedOut = checkedOut;
     }
 }

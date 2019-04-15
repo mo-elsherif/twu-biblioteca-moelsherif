@@ -31,7 +31,7 @@ public class ExampleTest {
     @After
     public void tearDown() {
         toRemoveBook.setCheckedOut(false);
-        toRemoveMovie.setCheckout(false);
+        toRemoveMovie.setCheckedOut(false);
     }
 
     public ByteArrayInputStream addLineSeparatorBetweenWordsAndReturnByteArrayInputStream(String... inputs) {
