@@ -8,8 +8,10 @@ import java.util.function.ToIntFunction;
 public class Printer {
 
     public static void printAllBooks(PrintStream out, ArrayList<Book> books) {
-        int longestNameLength = computePropertyMaxLength(books, (i -> i.getName().length()));
-        int longestAuthorLength = computePropertyMaxLength(books, (i -> i.getAuthor().length()));
+        int longestNameLength = computePropertyMaxLength(books, (ToIntFunction<? super Book>)
+                (i -> i.getName().length()));
+        int longestAuthorLength = computePropertyMaxLength(books, (ToIntFunction<? super Book>)
+                (i -> i.getAuthor().length()));
         for (Book book : books) {
             if (book.isCheckedOut()) {
                 continue;
@@ -23,8 +25,10 @@ public class Printer {
     }
 
     public static void printAllMovies(PrintStream out, ArrayList<Movie> movies) {
-        int longestNameLength = computePropertyMaxLengthMovie(movies, (i -> i.getName().length()));
-        int longestDirectorLength = computePropertyMaxLengthMovie(movies, (i -> i.getDirector().length()));
+        int longestNameLength = computePropertyMaxLength(movies, ((ToIntFunction<? super Movie>)
+                (i -> i.getName().length())));
+        int longestDirectorLength = computePropertyMaxLength(movies, ((ToIntFunction<? super Movie>)
+                (i -> i.getDirector().length())));
         for (Movie movie : movies) {
 //            if (book.isCheckedOut()) {
 //                continue;
@@ -37,11 +41,7 @@ public class Printer {
         }
     }
 
-    private static Integer computePropertyMaxLength(ArrayList list, ToIntFunction<? super Book> mapper) {
-        return list.stream().mapToInt(mapper).max().orElse(0);
-    }
-
-    private static Integer computePropertyMaxLengthMovie(ArrayList list, ToIntFunction<? super Movie> mapper) {
+    private static Integer computePropertyMaxLength(ArrayList list, ToIntFunction mapper) {
         return list.stream().mapToInt(mapper).max().orElse(0);
     }
 
