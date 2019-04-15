@@ -40,22 +40,42 @@ public class ExampleTest {
         return new ByteArrayInputStream(result.getBytes());
     }
 
-    public String[] normalSetup(String... args) {
-        ByteArrayInputStream in = addLineSeparatorBetweenWordsAndReturnByteArrayInputStream(args);
+    enum Stage {
+        BASIC,
+        BOOKING,
+        RETURNING
+    }
+
+    public String[] applyConsoleCommands(Stage stage, String... args){
+        ByteArrayInputStream inputStream = addLineSeparatorBetweenWordsAndReturnByteArrayInputStream(args);
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(bytes);
-        BibliotecaApp.printConsoleMessages(printStream, in);
+
+        switch (stage) {
+            case BASIC:
+                BibliotecaApp.printConsoleMessages(printStream, inputStream);
+                break;
+            case BOOKING:
+                InteractiveConsole.handleBookBooking(printStream, new Scanner(inputStream), BibliotecaApp.books);
+                break;
+            case RETURNING:
+                InteractiveConsole.handleBookReturning(printStream, new Scanner(inputStream), BibliotecaApp.books);
+                break;
+        }
         String[] strArr = bytes.toString().split("\n");
         return strArr;
     }
 
+    public String[] normalSetup(String... args) {
+        return applyConsoleCommands(Stage.BASIC,args);
+    }
+
     public String[] bookBookingNormalSetup(String... args) {
-        ByteArrayInputStream inx = addLineSeparatorBetweenWordsAndReturnByteArrayInputStream(args);
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        PrintStream printStream = new PrintStream(bytes);
-        InteractiveConsole.handleBookBooking(printStream, new Scanner(inx), BibliotecaApp.books);
-        String[] strArr = bytes.toString().split("\n");
-        return strArr;
+        return applyConsoleCommands(Stage.BOOKING,args);
+    }
+
+    public String[] bookReturningNormalSetup(String... args) {
+        return applyConsoleCommands(Stage.RETURNING,args);
     }
 
     public String[] getPrintedBooksInAllBookOption() {
@@ -138,6 +158,24 @@ public class ExampleTest {
         String[] strArr = bookBookingNormalSetup("XXX", toRemoveBook.getName());
         assertThat(strArr[1], is(equalTo(
                 "Sorry that book is not available")));
+    }
+
+    @Test
+    public void successfullMessageOnBookReturn() {
+        bookBookingNormalSetup(toRemoveBook.getName());
+        String[] strArr=bookReturningNormalSetup(toRemoveBook.getName());
+        boolean stateAfterReturning = toRemoveBook.isCheckedOut();
+        assertThat(stateAfterReturning, is(equalTo(false)));
+        assertThat(strArr[1], is(equalTo(
+                "Thank you for returning the book")));
+    }
+
+    @Test
+    public void unsuccessfullMessageOnBookReturn() {
+        toRemoveBook.setCheckedOut(true);
+        String[] strArr = bookReturningNormalSetup("XXX", toRemoveBook.getName());
+        assertThat(strArr[1], is(equalTo(
+                "This is not a valid book for return.")));
     }
 
 }

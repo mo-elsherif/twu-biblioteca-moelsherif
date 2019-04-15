@@ -5,9 +5,6 @@ public class Book {
     private String name;
     private String author;
     private int publicationYear;
-
-
-
     private boolean checkedOut;
 
     public Book(String name, String author, int publicationYear) {
@@ -16,7 +13,6 @@ public class Book {
         this.publicationYear = publicationYear;
         this.checkedOut=false;
     }
-
 
     public String getName() {
         return name;

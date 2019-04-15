@@ -9,7 +9,7 @@ public class BibliotecaApp {
 
     public static ArrayList<Book> books = BookFactory.createHardCodedBooks();
 
-    public static String[] menuOptions = {"List all books", "Checkout a Book", "Quit"};
+    public static String[] menuOptions = {"List all books", "Checkout a Book", "Return a Book", "Quit"};
 
     public static void main(String... args) {
         printConsoleMessages(System.out, System.in);
