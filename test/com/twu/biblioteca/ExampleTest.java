@@ -177,4 +177,16 @@ public class ExampleTest {
                 "This is not a valid book for return.")));
     }
 
+    @Test
+    public void testViewListOfAllMovies() {
+        String[] console = normalSetup("4", indexQuit);
+        int i = menuLength + 1;
+        assertThat(console[i++], is(equalTo(
+                "- Die Hard    | John McTiernan | 1998")));
+        assertThat(console[i++], is(equalTo(
+                "- Gladiator   | Ridley Scott   | 2000")));
+        assertThat(console[i++], is(equalTo(
+                "- The Shining | Mick Garris    | 1997")));
+    }
+
 }
