@@ -28,7 +28,6 @@ public class ExampleTest {
 
     @After
     public void tearDown() {
-        System.setOut(System.out);
         toRemoveBook.setCheckedOut(false);
     }
 
