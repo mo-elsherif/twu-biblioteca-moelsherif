@@ -30,9 +30,9 @@ public class Printer {
         int longestDirectorLength = computePropertyMaxLength(movies, ((ToIntFunction<? super Movie>)
                 (i -> i.getDirector().length())));
         for (Movie movie : movies) {
-//            if (book.isCheckedOut()) {
-//                continue;
-//            }
+           if (movie.isCheckout()) {
+                continue;
+            }
             int spacesNecessaryAfterName = longestNameLength - movie.getName().length();
             int spacesNecessaryAfterDirector = longestDirectorLength - movie.getDirector().length();
             out.println(String.format("- %s%s | %s%s | %d | %d", movie.getName(),

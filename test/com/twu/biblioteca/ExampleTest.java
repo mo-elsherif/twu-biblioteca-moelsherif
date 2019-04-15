@@ -18,17 +18,20 @@ public class ExampleTest {
     static int menuLength;
     static String indexQuit;
     static Book toRemoveBook;
+    static Movie toRemoveMovie;
 
     @BeforeClass
     public static void setUp() {
         menuLength = BibliotecaApp.menuOptions.length;
         indexQuit = menuLength + ""; //because its always the last option
         toRemoveBook = BibliotecaApp.books.get(0);
+        toRemoveMovie = BibliotecaApp.movies.get(0);
     }
 
     @After
     public void tearDown() {
         toRemoveBook.setCheckedOut(false);
+        toRemoveMovie.setCheckout(false);
     }
 
     public ByteArrayInputStream addLineSeparatorBetweenWordsAndReturnByteArrayInputStream(String... inputs) {
@@ -41,8 +44,9 @@ public class ExampleTest {
 
     enum Stage {
         BASIC,
-        BOOKING,
-        RETURNING
+        BOOKBOOKING,
+        BOOKRETURNING,
+        MOVIEBOOKING,
     }
 
     public String[] applyConsoleCommands(Stage stage, String... args){
@@ -54,11 +58,14 @@ public class ExampleTest {
             case BASIC:
                 BibliotecaApp.printConsoleMessages(printStream, inputStream);
                 break;
-            case BOOKING:
+            case BOOKBOOKING:
                 BookInteractiveConsole.handleBookBooking(printStream, new Scanner(inputStream), BibliotecaApp.books);
                 break;
-            case RETURNING:
+            case BOOKRETURNING:
                 BookInteractiveConsole.handleBookReturning(printStream, new Scanner(inputStream), BibliotecaApp.books);
+                break;
+            case MOVIEBOOKING:
+                MovieInteractiveConsole.handleMovieBooking(printStream, new Scanner(inputStream), BibliotecaApp.movies);
                 break;
         }
         String[] strArr = bytes.toString().split("\n");
@@ -70,11 +77,15 @@ public class ExampleTest {
     }
 
     public String[] bookBookingNormalSetup(String... args) {
-        return applyConsoleCommands(Stage.BOOKING,args);
+        return applyConsoleCommands(Stage.BOOKBOOKING,args);
+    }
+
+    public String[] movieBookingNormalSetup(String... args) {
+        return applyConsoleCommands(Stage.MOVIEBOOKING,args);
     }
 
     public String[] bookReturningNormalSetup(String... args) {
-        return applyConsoleCommands(Stage.RETURNING,args);
+        return applyConsoleCommands(Stage.BOOKRETURNING,args);
     }
 
     public String[] getPrintedBooksInAllBookOption() {
@@ -187,5 +198,12 @@ public class ExampleTest {
                 "- Gladiator   | Ridley Scott   | 2000 | 9")));
         assertThat(console[i++], is(equalTo(
                 "- The Shining | Mick Garris    | 1997 | 0")));
+    }
+
+    @Test
+    public void checkOutAMovie(){
+        String[] strArr = movieBookingNormalSetup(toRemoveMovie.getName());
+        assertThat(strArr[1], is(equalTo(
+                "Thank you! Enjoy the movie")));
     }
 }

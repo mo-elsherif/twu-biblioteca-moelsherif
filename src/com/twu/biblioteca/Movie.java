@@ -5,6 +5,7 @@ public class Movie {
     private int year;
     private String director;
     private int rating; //0 means no rating
+    private boolean checkout;
 
     public Movie(String name, int year, String director, int rating) {
         this.name = name;
@@ -43,5 +44,13 @@ public class Movie {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isCheckout() {
+        return checkout;
+    }
+
+    public void setCheckout(boolean checkout) {
+        this.checkout = checkout;
     }
 }

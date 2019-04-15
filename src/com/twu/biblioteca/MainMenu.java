@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import static com.twu.biblioteca.BookInteractiveConsole.*;
+import static com.twu.biblioteca.MovieInteractiveConsole.handleMovieBooking;
 
 public class MainMenu {
 
@@ -24,6 +25,8 @@ public class MainMenu {
             } else if (nextLine == 4) {
                 Printer.printAllMovies(out,movies);
             } else if (nextLine == 5) {
+                handleMovieBooking(out,scan,movies);
+            } else if (nextLine == 6) {
                 Messages.quitMessage(out);
                 return;
             }

@@ -11,7 +11,7 @@ public class BibliotecaApp {
 
     public static ArrayList<Movie> movies = MovieFactory.createHardCodedMovies();
 
-    public static String[] menuOptions = {"List all books", "Checkout a Book", "Return a Book", "List all movies", "Quit"};
+    public static String[] menuOptions = {"List all books", "Checkout a Book", "Return a Book", "List all movies", "Checkout a Movie", "Quit"};
 
     public static void main(String... args) {
         printConsoleMessages(System.out, System.in);
