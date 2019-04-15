@@ -7,32 +7,6 @@ import java.util.stream.Collectors;
 
 public class BookInteractiveConsole {
 
-    public static void handleInteractiveMode(PrintStream out, Scanner scan, String[] menuOptions, ArrayList<Book> books) {
-        while (true) {
-            Integer nextLine;
-            do {
-                Printer.printAllMenus(out, menuOptions);
-                nextLine = validInputWithErrorMessage(out, scan, menuOptions);
-            } while (nextLine == null);
-            if (nextLine == 1) {
-                Printer.printAllBooks(out, books);
-            } else if (nextLine == 2) {
-                handleBookBooking(out, scan, books);
-            } else if (nextLine == 3) {
-                handleBookReturning(out, scan, books);
-            } else if (nextLine == 4) {
-                out.println("- Die Hard    | John McTiernan | 1998");
-                out.println("- Gladiator   | Ridley Scott   | 2000");
-                out.println("- The Shining | Mick Garris    | 1997");
-                return;
-            } else if (nextLine == 5) {
-                Messages.quitMessage(out);
-                return;
-            }
-        }
-
-    }
-
     public static void handleBookBooking(PrintStream out, Scanner scan, ArrayList<Book> books) {
         Book book;
         do {

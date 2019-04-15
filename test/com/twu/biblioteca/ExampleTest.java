@@ -182,11 +182,10 @@ public class ExampleTest {
         String[] console = normalSetup("4", indexQuit);
         int i = menuLength + 1;
         assertThat(console[i++], is(equalTo(
-                "- Die Hard    | John McTiernan | 1998")));
+                "- Die Hard    | John McTiernan | 1998 | 5")));
         assertThat(console[i++], is(equalTo(
-                "- Gladiator   | Ridley Scott   | 2000")));
+                "- Gladiator   | Ridley Scott   | 2000 | 9")));
         assertThat(console[i++], is(equalTo(
-                "- The Shining | Mick Garris    | 1997")));
+                "- The Shining | Mick Garris    | 1997 | 0")));
     }
-
 }
