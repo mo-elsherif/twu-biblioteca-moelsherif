@@ -2,10 +2,10 @@ package com.twu.biblioteca;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.stream.IntStream;
+import java.util.Scanner;
 
 import org.junit.After;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 
@@ -15,52 +15,72 @@ import static org.junit.Assert.assertThat;
 
 public class ExampleTest {
 
-    ByteArrayOutputStream bytes;
-    PrintStream console;
-    String[] startingConsoleLines;
-    ByteArrayInputStream in;
-    int menuLength;
+    static int menuLength;
+    static String indexQuit;
+    static Book toRemoveBook;
 
-    @Before
-    public void setUp() {
-        console = System.out;
-        in = new ByteArrayInputStream(("1").getBytes());
-        setBytesToOut();
+    @BeforeClass
+    public static void setUp() {
         menuLength = BibliotecaApp.menuOptions.length;
+        indexQuit = menuLength + ""; //because its always the last option
+        toRemoveBook = BibliotecaApp.books.get(0);
     }
 
     @After
     public void tearDown() {
-        System.setOut(console);
+        System.setOut(System.out);
+        toRemoveBook.setCheckedOut(false);
     }
 
-    public void setBytesToOut() {
-        bytes = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(bytes));
+    public ByteArrayInputStream addLineSeparatorBetweenWordsAndReturnByteArrayInputStream(String... inputs) {
+        String result = "";
+        for (String s : inputs) {
+            result += s + System.lineSeparator();
+        }
+        return new ByteArrayInputStream(result.getBytes());
     }
 
-    public void normalSetup() {
-        BibliotecaApp.printConsoleMessages(in, System.out);
-        startingConsoleLines = bytes.toString().split("\n");
+    public String[] normalSetup(String... args) {
+        ByteArrayInputStream in = addLineSeparatorBetweenWordsAndReturnByteArrayInputStream(args);
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(bytes);
+        BibliotecaApp.printConsoleMessages(printStream, in);
+        String[] strArr = bytes.toString().split("\n");
+        return strArr;
+    }
+
+    public String[] bookBookingNormalSetup(String... args) {
+        ByteArrayInputStream inx = addLineSeparatorBetweenWordsAndReturnByteArrayInputStream(args);
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(bytes);
+        InteractiveConsole.handleBookBooking(printStream, new Scanner(inx), BibliotecaApp.books);
+        String[] strArr = bytes.toString().split("\n");
+        return strArr;
+    }
+
+    public String[] getPrintedBooksInAllBookOption() {
+        ByteArrayOutputStream localBytes = new ByteArrayOutputStream();
+        PrintStream localPrintStream = new PrintStream(localBytes);
+        Printer.printAllBooks(localPrintStream, BibliotecaApp.books);
+        return localBytes.toString().split("\n");
     }
 
     @Test
     public void testBibliothecaGreetingMessage() {
-        normalSetup();
-        assertThat(startingConsoleLines[0], is(equalTo(
+        String[] console = normalSetup("1", indexQuit);
+        assertThat(console[0], is(equalTo(
                 "Welcome to Biblioteca. Your one-stop-shop for great book titles in Bangalore")));
     }
 
     @Test
     public void testViewListOfAllBooks() {
-        normalSetup();
+        String[] console = normalSetup("1", indexQuit);
         int i = menuLength + 1;
-        //+System.lineSeparator()+"2"
-        assertThat(startingConsoleLines[i++], is(equalTo(
+        assertThat(console[i++], is(equalTo(
                 "- Harry Potter      | J. K. Rowling        | 1990")));
-        assertThat(startingConsoleLines[i++], is(equalTo(
+        assertThat(console[i++], is(equalTo(
                 "- Lord of the Rings | J. R. R. Tolkien     | 1995")));
-        assertThat(startingConsoleLines[i++], is(equalTo(
+        assertThat(console[i++], is(equalTo(
                 "- Tarzan            | Edgar Rice Burroughs | 1970")));
     }
 
@@ -76,21 +96,48 @@ public class ExampleTest {
         };
 
         for (String errorCase : errorCases) {
-            in = new ByteArrayInputStream((errorCase + System.lineSeparator() + "1").getBytes());
-            BibliotecaApp.printConsoleMessages(in, System.out);
-            startingConsoleLines = bytes.toString().split("\n");
-            assertThat(startingConsoleLines[menuLength + 1], is(equalTo(
+            String[] console = normalSetup(errorCase, "1", indexQuit);
+            assertThat(console[menuLength + 1], is(equalTo(
                     "Please select a valid option!")));
         }
     }
 
     @Test
     public void testQuitApplicationOnQuit() {
-        int indexQuit = menuLength; //because its always the last option
-        in = new ByteArrayInputStream((""  + indexQuit).getBytes());
-        BibliotecaApp.printConsoleMessages(in, System.out);
-        startingConsoleLines = bytes.toString().split("\n");
-        assertThat(startingConsoleLines[menuLength+1], is(equalTo(
+        String[] console = normalSetup(indexQuit);
+        assertThat(console[menuLength + 1], is(equalTo(
                 "Thank you for using our Application.")));
     }
+
+    @Test
+    public void checkedOutBooksDoNotAppearInListOfAllBooks() {
+
+        String[] printedBooksBeforeCheckingOut = getPrintedBooksInAllBookOption();
+
+        boolean stateBeforeCheckingOut = toRemoveBook.isCheckedOut();
+
+        normalSetup("2", toRemoveBook.getName(), "1", indexQuit);
+
+        boolean stateAfterCheckingOut = toRemoveBook.isCheckedOut();
+        String[] printedBooksAfterCheckingOut = getPrintedBooksInAllBookOption();
+
+        assertThat(printedBooksAfterCheckingOut.length + 1, is(equalTo(printedBooksBeforeCheckingOut.length)));
+        assertThat(stateBeforeCheckingOut, is(equalTo(false)));
+        assertThat(stateAfterCheckingOut, is(equalTo(true)));
+    }
+
+    @Test
+    public void successMessageOnBookCheckOut() {
+        String[] strArr = bookBookingNormalSetup(toRemoveBook.getName());
+        assertThat(strArr[1], is(equalTo(
+                "Thank you! Enjoy the book")));
+    }
+
+    @Test
+    public void unsuccessfullMessageOnBookCheckOut() {
+        String[] strArr = bookBookingNormalSetup("XXX", toRemoveBook.getName());
+        assertThat(strArr[1], is(equalTo(
+                "Sorry that book is not available")));
+    }
+
 }
