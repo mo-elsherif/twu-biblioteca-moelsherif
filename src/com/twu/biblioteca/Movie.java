@@ -17,4 +17,9 @@ public class Movie extends CheckableItem {
     public int getRating() {
         return rating;
     }
+
+    @Override
+    public String getItemName() {
+        return "movie";
+    }
 }

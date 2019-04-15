@@ -13,4 +13,9 @@ public class Book extends CheckableItem {
     public String getAuthor() {
         return author;
     }
+
+    @Override
+    public String getItemName() {
+        return "book";
+    }
 }

@@ -59,13 +59,13 @@ public class ExampleTest {
                 BibliotecaApp.printConsoleMessages(printStream, inputStream);
                 break;
             case BOOKBOOKING:
-                BookInteractiveConsole.handleBookBooking(printStream, new Scanner(inputStream), BibliotecaApp.books);
+                CheckableItemInteractiveConsole.handleCheckableItemBooking(printStream, new Scanner(inputStream), BibliotecaApp.books);
                 break;
             case BOOKRETURNING:
-                BookInteractiveConsole.handleBookReturning(printStream, new Scanner(inputStream), BibliotecaApp.books);
+                CheckableItemInteractiveConsole.handleBookReturning(printStream, new Scanner(inputStream), BibliotecaApp.books);
                 break;
             case MOVIEBOOKING:
-                MovieInteractiveConsole.handleMovieBooking(printStream, new Scanner(inputStream), BibliotecaApp.movies);
+                CheckableItemInteractiveConsole.handleCheckableItemBooking(printStream, new Scanner(inputStream), BibliotecaApp.movies);
                 break;
         }
         String[] strArr = bytes.toString().split("\n");

@@ -1,6 +1,6 @@
 package com.twu.biblioteca;
 
-public class CheckableItem {
+public abstract class CheckableItem {
 
     String name;
     int year;
@@ -15,16 +15,8 @@ public class CheckableItem {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public int getYear() {
         return year;
-    }
-
-    public void setYear(int year) {
-        this.year = year;
     }
 
     public boolean isCheckedOut() {
@@ -34,4 +26,6 @@ public class CheckableItem {
     public void setCheckedOut(boolean checkedOut) {
         this.checkedOut = checkedOut;
     }
+
+    public abstract String getItemName();
 }
