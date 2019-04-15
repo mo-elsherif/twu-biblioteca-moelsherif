@@ -55,10 +55,10 @@ public class ExampleTest {
                 BibliotecaApp.printConsoleMessages(printStream, inputStream);
                 break;
             case BOOKING:
-                InteractiveConsole.handleBookBooking(printStream, new Scanner(inputStream), BibliotecaApp.books);
+                BookInteractiveConsole.handleBookBooking(printStream, new Scanner(inputStream), BibliotecaApp.books);
                 break;
             case RETURNING:
-                InteractiveConsole.handleBookReturning(printStream, new Scanner(inputStream), BibliotecaApp.books);
+                BookInteractiveConsole.handleBookReturning(printStream, new Scanner(inputStream), BibliotecaApp.books);
                 break;
         }
         String[] strArr = bytes.toString().split("\n");
