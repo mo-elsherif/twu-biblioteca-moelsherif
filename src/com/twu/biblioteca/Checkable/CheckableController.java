@@ -1,4 +1,4 @@
-package com.twu.biblioteca;
+package com.twu.biblioteca.Checkable;
 
 import com.twu.biblioteca.Exception.ItemAlreadyCheckedOutException;
 import com.twu.biblioteca.Exception.ItemAlreadyReturnedException;

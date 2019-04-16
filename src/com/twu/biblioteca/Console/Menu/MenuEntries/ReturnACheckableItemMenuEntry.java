@@ -1,20 +1,21 @@
-package com.twu.biblioteca.Console.Menu;
+package com.twu.biblioteca.Console.Menu.MenuEntries;
 
-import com.twu.biblioteca.CheckableController;
-import com.twu.biblioteca.CheckableItem;
+import com.twu.biblioteca.Checkable.CheckableController;
+import com.twu.biblioteca.Checkable.CheckableItem;
+import com.twu.biblioteca.Console.Menu.MenuEntries.MenuEntry;
 import com.twu.biblioteca.Exception.ItemAlreadyReturnedException;
-import com.twu.biblioteca.Utilities;
+import com.twu.biblioteca.Utilities.Utilities;
 
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Scanner;
 
-public class ReturnACheckableItem extends MenuEntry {
+public class ReturnACheckableItemMenuEntry extends MenuEntry {
     private final HashMap<String, CheckableItem> checkablesMap;
     private final CheckableController controllerItems;
     private final String itemName;
 
-    public ReturnACheckableItem(HashMap<String, CheckableItem> checkablesMap, CheckableController controllerItems) {
+    public ReturnACheckableItemMenuEntry(HashMap<String, CheckableItem> checkablesMap, CheckableController controllerItems) {
         this.checkablesMap = checkablesMap;
         this.controllerItems = controllerItems;
         this.itemName = Utilities.getRandomHashMapElement(checkablesMap).getItemName();

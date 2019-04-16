@@ -1,6 +1,6 @@
-package com.twu.biblioteca;
+package com.twu.biblioteca.Utilities;
 
-import com.twu.biblioteca.Movie.Movie;
+import com.twu.biblioteca.Checkable.CheckableItem;
 
 import java.util.HashMap;
 
@@ -14,8 +14,8 @@ public class Utilities {
         }
     }
 
-    public static CheckableItem getRandomHashMapElement(HashMap<String,CheckableItem> hashmap) {
-        return  hashmap.get(hashmap.entrySet().iterator()
+    public static CheckableItem getRandomHashMapElement(HashMap<String, CheckableItem> hashmap) {
+        return hashmap.get(hashmap.entrySet().iterator()
                 .next().getKey());
     }
 }

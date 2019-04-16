@@ -1,7 +1,7 @@
 package com.twu.biblioteca.Book;
 
 
-import com.twu.biblioteca.CheckableItem;
+import com.twu.biblioteca.Checkable.CheckableItem;
 
 public class Book extends CheckableItem {
 

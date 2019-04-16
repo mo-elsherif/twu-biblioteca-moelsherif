@@ -1,5 +1,7 @@
 package com.twu.biblioteca.Console.Menu;
 
+import com.twu.biblioteca.Console.Menu.MenuEntries.MenuEntry;
+
 public class MenuItem {
     private String menuItemName;
     private MenuEntry menuEntry;

@@ -1,6 +1,6 @@
 package com.twu.biblioteca.Movie;
 
-import com.twu.biblioteca.CheckableItem;
+import com.twu.biblioteca.Checkable.CheckableItem;
 
 public class Movie extends CheckableItem {
     private String director;

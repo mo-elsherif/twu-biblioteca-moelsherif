@@ -10,10 +10,8 @@ public class PrintableEntry {
     }
 
     public PrintableEntry(Integer number, int maxLength) {
-        this.name = number+"";
-        this.maxLength = maxLength;
+        this(number + "",maxLength);
     }
-
 
     public String getName() {
         return name;
@@ -22,4 +20,5 @@ public class PrintableEntry {
     public int getMaxLength() {
         return maxLength;
     }
+
 }

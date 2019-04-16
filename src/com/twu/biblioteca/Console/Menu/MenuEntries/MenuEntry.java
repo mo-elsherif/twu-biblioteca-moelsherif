@@ -1,4 +1,4 @@
-package com.twu.biblioteca.Console.Menu;
+package com.twu.biblioteca.Console.Menu.MenuEntries;
 
 import com.twu.biblioteca.Exception.QuitApplicationException;
 

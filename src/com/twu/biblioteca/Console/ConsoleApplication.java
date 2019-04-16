@@ -3,9 +3,9 @@ package com.twu.biblioteca.Console;
 import com.twu.biblioteca.Console.Menu.MainMenu;
 import com.twu.biblioteca.Console.Menu.MenuItem;
 import com.twu.biblioteca.Exception.QuitApplicationException;
+import com.twu.biblioteca.Messages;
 import com.twu.biblioteca.Printer.PrinterFormat;
-import com.twu.biblioteca.PrinterClass;
-import com.twu.biblioteca.Utilities;
+import com.twu.biblioteca.Utilities.Utilities;
 
 import java.io.PrintStream;
 import java.util.Scanner;
@@ -24,7 +24,7 @@ public class ConsoleApplication {
     }
 
     public void interactiveLoop() {
-
+        printStream.println(Messages.welcomeMessage());
         while (true) {
             Integer nextLine;
             do {
@@ -34,6 +34,7 @@ public class ConsoleApplication {
             try {
                 menuItems[nextLine].getMenuEntry().execute(printStream,scanner);
             } catch (QuitApplicationException e) {
+                printStream.println(Messages.quitMessage());
                 return;
             }
         }
@@ -54,5 +55,4 @@ public class ConsoleApplication {
             printStream.println(printerFormat.menuItem(i, menuItems[i]));
         }
     }
-
 }
