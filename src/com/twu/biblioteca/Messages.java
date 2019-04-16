@@ -11,4 +11,13 @@ public class Messages {
     public static String quitMessage() {
         return "Thank you for using our Application.";
     }
+
+    public static String userShouldSignInMessage() {
+        return "User should sign in before checking out a book";
+    }
+
+    public static String notValidForReturnMessage(String itemName){
+        return "This is not a valid " + itemName + " for return.";
+    }
+
 }

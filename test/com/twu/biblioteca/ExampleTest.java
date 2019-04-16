@@ -14,15 +14,15 @@ import com.twu.biblioteca.Checkable.CheckableItem;
 
 import com.twu.biblioteca.Console.ConsoleApplication;
 import com.twu.biblioteca.Console.Menu.MainMenu;
-import com.twu.biblioteca.Console.Menu.MenuEntries.CheckoutACheckableItemMenuEntry;
-import com.twu.biblioteca.Console.Menu.MenuEntries.ListAllBooksMenuEntry;
-import com.twu.biblioteca.Console.Menu.MenuEntries.ListAllMoviesMenuEntry;
-import com.twu.biblioteca.Console.Menu.MenuEntries.ReturnACheckableItemMenuEntry;
+import com.twu.biblioteca.Console.Menu.MenuEntries.*;
+import com.twu.biblioteca.Exception.InvalidUserOperationException;
 import com.twu.biblioteca.Exception.ItemAlreadyCheckedOutException;
 import com.twu.biblioteca.Exception.ItemAlreadyReturnedException;
 import com.twu.biblioteca.Movie.Movie;
 import com.twu.biblioteca.Printer.PrintableEntry;
 import com.twu.biblioteca.Printer.PrinterFormat;
+import com.twu.biblioteca.Users.User;
+import com.twu.biblioteca.Users.UserController;
 import com.twu.biblioteca.Utilities.Utilities;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
@@ -37,23 +37,30 @@ import static org.junit.Assert.assertThat;
 
 public class ExampleTest {
 
-    static Book toRemoveBook;
-    static Movie toRemoveMovie;
-    static HashMap<String, CheckableItem> movies;
-    static HashMap<String, CheckableItem> books;
-    static CheckableController controllerMovies;
-    static CheckableController controllerBooks;
-    static ByteArrayOutputStream bytes;
-    static PrintStream printStream;
+    private static User defaultUser;
+    private static Book defaultBook;
+    private static Movie defaultMovie;
+    private static HashMap<String, CheckableItem> movies;
+    private static HashMap<String, CheckableItem> books;
+    private static CheckableController controllerMovies;
+    private static CheckableController controllerBooks;
+    private static UserController controllerUsers;
+    private static ByteArrayOutputStream bytes;
+    private static PrintStream printStream;
+    private static HashMap<String, User> users;
 
     @BeforeClass
     public static void setUp() {
         books = BibliotecaApp.books;
         movies = BibliotecaApp.movies;
-        controllerMovies = new CheckableController(movies);
-        controllerBooks = new CheckableController(books);
-        toRemoveBook = (Book) Utilities.getRandomHashMapElement(books);
-        toRemoveMovie = (Movie) Utilities.getRandomHashMapElement(movies);
+        users = BibliotecaApp.users;
+        controllerUsers = new UserController(users);
+        controllerMovies = new CheckableController(movies,controllerUsers);
+        controllerBooks = new CheckableController(books,controllerUsers);
+
+        defaultBook = (Book) Utilities.getRandomHashMapElement(books);
+        defaultMovie = (Movie) Utilities.getRandomHashMapElement(movies);
+        defaultUser = (User) Utilities.getRandomHashMapElement(users);
     }
 
     @Before
@@ -64,48 +71,55 @@ public class ExampleTest {
 
     @After
     public void tearDown() {
-        toRemoveBook.setCheckedOut(false);
-        toRemoveMovie.setCheckedOut(false);
+        defaultBook.setCheckedOutUser(null);
+        defaultMovie.setCheckedOutUser(null);
+        logout();
     }
 
+
+
     @Test
-    public void checkableController() throws ItemAlreadyCheckedOutException {
-        CheckableController controller = new CheckableController(movies);
-        controller.checkOutAnItem(toRemoveMovie.getName());
-        assertThat(toRemoveMovie.isCheckedOut(), is(equalTo(true)));
+    public void checkableController() throws ItemAlreadyCheckedOutException, InvalidUserOperationException {
+        login();
+        CheckableController controller = new CheckableController(movies,controllerUsers);
+        controller.checkOutAnItem(defaultMovie.getName(), defaultUser);
+        assertThat(defaultMovie.isCheckedOut(), is(equalTo(true)));
     }
 
     @Test(expected = ItemAlreadyCheckedOutException.class)
-    public void cantCheckOutAlreadyCheckedOutItem() throws ItemAlreadyCheckedOutException {
-        toRemoveMovie.setCheckedOut(true);
-        CheckableController controller = new CheckableController(movies);
-        controller.checkOutAnItem(toRemoveMovie.getName());
+    public void cantCheckOutAlreadyCheckedOutItem() throws ItemAlreadyCheckedOutException, InvalidUserOperationException {
+        login();
+        defaultMovie.setCheckedOutUser(defaultUser);
+        CheckableController controller = new CheckableController(movies,controllerUsers);
+        controller.checkOutAnItem(defaultMovie.getName(), defaultUser);
     }
 
     @Test
-    public void canReturnAlreadyCheckedOutItem() throws ItemAlreadyReturnedException, ItemAlreadyCheckedOutException {
-        CheckableController controller = new CheckableController(movies);
-        controller.checkOutAnItem(toRemoveMovie.getName());
-        controller.returnAnItem(toRemoveMovie.getName());
+    public void canReturnAlreadyCheckedOutItem() throws ItemAlreadyReturnedException, ItemAlreadyCheckedOutException, InvalidUserOperationException {
+        login();
+        CheckableController controller = new CheckableController(movies,controllerUsers);
+        controller.checkOutAnItem(defaultMovie.getName(), defaultUser);
+        controller.returnAnItem(defaultMovie.getName(), defaultUser);
     }
 
     @Test(expected = ItemAlreadyReturnedException.class)
-    public void cantReturnAlreadyReturnedItem() throws ItemAlreadyReturnedException {
-        CheckableController controller = new CheckableController(movies);
-        controller.returnAnItem(toRemoveMovie.getName());
+    public void cantReturnAlreadyReturnedItem() throws ItemAlreadyReturnedException, InvalidUserOperationException {
+        login();
+        CheckableController controller = new CheckableController(movies,controllerUsers);
+        controller.returnAnItem(defaultMovie.getName(), defaultUser);
     }
 
     @Test
-    public void getListOfAllItemsAndCheckOutAnItemAndMakeSureItsRemovedFromTheList() throws ItemAlreadyCheckedOutException {
-        CheckableController controller = new CheckableController(movies);
+    public void getListOfAllItemsAndCheckOutAnItemAndMakeSureItsRemovedFromTheList() throws ItemAlreadyCheckedOutException, InvalidUserOperationException {
+        login();
+        CheckableController controller = new CheckableController(movies,controllerUsers);
         ArrayList<CheckableItem> items = controller.getListOfCheckableItems();
-        controller.checkOutAnItem(toRemoveMovie.getName());
+        controller.checkOutAnItem(defaultMovie.getName(), defaultUser);
         ArrayList<CheckableItem> itemsAfterCheckOut = controller.getListOfCheckableItems();
         items.removeAll(itemsAfterCheckOut);
         assertThat(items.size(), is(equalTo(1)));
-        assertThat(items.get(0).getName(), is(equalTo(toRemoveMovie.getName())));
+        assertThat(items.get(0).getName(), is(equalTo(defaultMovie.getName())));
     }
-
 
 
     @Test
@@ -142,8 +156,9 @@ public class ExampleTest {
 
     @Test
     public void checkOutABook() {
-        CheckoutACheckableItemMenuEntry menuEntry = new CheckoutACheckableItemMenuEntry(books, controllerBooks);
-        menuEntry.execute(printStream, toRemoveBook.getName());
+        login();
+        CheckoutACheckableItemMenuEntry menuEntry = new CheckoutACheckableItemMenuEntry(books, controllerBooks, controllerUsers);
+        menuEntry.execute(printStream, defaultBook.getName());
         String[] strArr = bytes.toString().split("\n");
         assertThat(strArr[0], is(equalTo(
                 "Thank you! Enjoy the book")));
@@ -151,8 +166,9 @@ public class ExampleTest {
 
     @Test
     public void checkOutAMovie() {
-        CheckoutACheckableItemMenuEntry menuEntry = new CheckoutACheckableItemMenuEntry(movies, controllerMovies);
-        menuEntry.execute(printStream, toRemoveMovie.getName());
+        login();
+        CheckoutACheckableItemMenuEntry menuEntry = new CheckoutACheckableItemMenuEntry(movies, controllerMovies, controllerUsers);
+        menuEntry.execute(printStream, defaultMovie.getName());
         String[] strArr = bytes.toString().split("\n");
         assertThat(strArr[0], is(equalTo(
                 "Thank you! Enjoy the movie")));
@@ -160,7 +176,7 @@ public class ExampleTest {
 
     @Test
     public void checkOutAnInvalidBook() {
-        CheckoutACheckableItemMenuEntry menuEntry = new CheckoutACheckableItemMenuEntry(books, controllerBooks);
+        CheckoutACheckableItemMenuEntry menuEntry = new CheckoutACheckableItemMenuEntry(books, controllerBooks, controllerUsers);
         menuEntry.execute(printStream, "XXX");
         String[] strArr = bytes.toString().split("\n");
         assertThat(strArr[0], is(equalTo(
@@ -169,9 +185,10 @@ public class ExampleTest {
 
     @Test
     public void returnAValidBook() {
-        toRemoveBook.setCheckedOut(true);
-        ReturnACheckableItemMenuEntry menuEntry = new ReturnACheckableItemMenuEntry(books, controllerBooks);
-        menuEntry.execute(printStream, toRemoveBook.getName());
+        login();
+        defaultBook.setCheckedOutUser(defaultUser);
+        ReturnACheckableItemMenuEntry menuEntry = new ReturnACheckableItemMenuEntry(books, controllerBooks, controllerUsers);
+        menuEntry.execute(printStream, defaultBook.getName());
         String[] strArr = bytes.toString().split("\n");
         assertThat(strArr[0], is(equalTo(
                 "Thank you for returning the book")));
@@ -179,7 +196,7 @@ public class ExampleTest {
 
     @Test
     public void returnAnInValidBook() {
-        ReturnACheckableItemMenuEntry menuEntry = new ReturnACheckableItemMenuEntry(books, controllerBooks);
+        ReturnACheckableItemMenuEntry menuEntry = new ReturnACheckableItemMenuEntry(books, controllerBooks, controllerUsers);
         menuEntry.execute(printStream, "XXX");
         String[] strArr = bytes.toString().split("\n");
         assertThat(strArr[0], is(equalTo(
@@ -188,9 +205,10 @@ public class ExampleTest {
 
     @Test
     public void checkedOutBooksDoNotAppearInListOfAllBooks() {
+        login();
         ListAllBooksMenuEntry listAllBooksMenuEntry = new ListAllBooksMenuEntry(books);
         ArrayList<ArrayList<PrintableEntry>> allEntries = listAllBooksMenuEntry.getAllMapEntries();
-        toRemoveBook.setCheckedOut(true);
+        defaultBook.setCheckedOutUser(defaultUser);
         ArrayList<ArrayList<PrintableEntry>> allEntriesAfterCheckOut = listAllBooksMenuEntry.getAllMapEntries();
         assertThat(allEntriesAfterCheckOut.size(), is(equalTo(allEntries.size() - 1)));
     }
@@ -199,10 +217,10 @@ public class ExampleTest {
     public void checkBookPrintContainsEssentialInfo() {
         ListAllBooksMenuEntry menuEntry = new ListAllBooksMenuEntry(books);
         PrinterFormat x = new PrinterFormat();
-        String elmInfo = x.checkableItem(menuEntry.getBookPrintableEntries(toRemoveBook));
-        assertThat(elmInfo, CoreMatchers.containsString(toRemoveBook.getName()));
-        assertThat(elmInfo, CoreMatchers.containsString(toRemoveBook.getAuthor()));
-        assertThat(elmInfo, CoreMatchers.containsString(toRemoveBook.getYear() + ""));
+        String elmInfo = x.checkableItem(menuEntry.getBookPrintableEntries(defaultBook));
+        assertThat(elmInfo, CoreMatchers.containsString(defaultBook.getName()));
+        assertThat(elmInfo, CoreMatchers.containsString(defaultBook.getAuthor()));
+        assertThat(elmInfo, CoreMatchers.containsString(defaultBook.getYear() + ""));
     }
 
     @Test
@@ -217,54 +235,48 @@ public class ExampleTest {
     public void checkMoviePrintContainsEssentialInfo() {
         ListAllMoviesMenuEntry menuEntry = new ListAllMoviesMenuEntry(movies);
         PrinterFormat x = new PrinterFormat();
-        String elmInfo = x.checkableItem(menuEntry.getBookPrintableEntries(toRemoveMovie));
-        assertThat(elmInfo, CoreMatchers.containsString(toRemoveMovie.getName()));
-        assertThat(elmInfo, CoreMatchers.containsString(toRemoveMovie.getYear() + ""));
-        assertThat(elmInfo, CoreMatchers.containsString(toRemoveMovie.getDirector()));
+        String elmInfo = x.checkableItem(menuEntry.getBookPrintableEntries(defaultMovie));
+        assertThat(elmInfo, CoreMatchers.containsString(defaultMovie.getName()));
+        assertThat(elmInfo, CoreMatchers.containsString(defaultMovie.getYear() + ""));
+        assertThat(elmInfo, CoreMatchers.containsString(defaultMovie.getDirector()));
     }
 
+    public void login() {
+        controllerUsers.logIn(defaultUser.getUserId(), defaultUser.getPassword());
+    }
 
+    private void logout() {
+        controllerUsers.logOut();
+    }
 
     @Test
-    public void  loginUnsuccessfull(){
-        UserLoginMenuEntry menuEntry = new UserLoginMenuEntry(users);
-        menuEntry.execute(printStream, "XXX");
+    public void loginUnsuccessfull() {
+        UserLoginMenuEntry menuEntry = new UserLoginMenuEntry(users,controllerUsers);
+        menuEntry.execute(printStream, "XXX","");
         String[] strArr = bytes.toString().split("\n");
         assertThat(strArr[0], is(equalTo(
-                "This user data is not valid")));
+                "This user data is not valid. Please type your info again.")));
     }
 
     @Test
-    public void loginSuccesfull(){
-        UserLoginMenuEntry menuEntry = new UserLoginMenuEntry(users);
-        menuEntry.execute(printStream, "123-4567");
+    public void loginSuccesfull() {
+        UserLoginMenuEntry menuEntry = new UserLoginMenuEntry(users,controllerUsers);
+        menuEntry.execute(printStream, "123-4567", "abcde");
         String[] strArr = bytes.toString().split("\n");
         assertThat(strArr[0], is(equalTo(
                 "You have successfully signed in")));
     }
-    
-    public void cantCheckOutAlreadyCheckedOutItem() throws ItemAlreadyCheckedOutException {
-        defaultUser.login();
-        controller.checkOutAnItem(toRemoveMovie.getName());
-        assertThat(toRemoveMovie.isCheckedOut(),is(equalTo(true)));
+
+    @Test(expected = InvalidUserOperationException.class)
+    public void cantCheckOutItemIfNotLoggedIn() throws ItemAlreadyCheckedOutException, InvalidUserOperationException {
+        controllerMovies.checkOutAnItem(defaultMovie.getName(), defaultUser);
     }
 
-    @Test(expected = UserNotLoggedInException.class)
-    public void canReturnAlreadyCheckedOutItem() throws ItemAlreadyReturnedException, ItemAlreadyCheckedOutException {
-        controller.checkOutAnItem(toRemoveMovie.getName());
-        assertThat(toRemoveMovie.isCheckedOut(),is(equalTo(true)));
-    }
-
-    @Test(expected = UserNotLoggedInException.class)
-    public void canReturnAlreadyCheckedOutItem() throws ItemAlreadyReturnedException, ItemAlreadyCheckedOutException {
-        defaultUser.login();
-        controller.returnABook(toRemoveBook.getName());
-        assertThat(toRemoveMovie.isCheckedOut(),is(equalTo(true)));
-    }
-
-    @Test(expected = UserNotLoggedInException.class)
-    public void canReturnAlreadyCheckedOutItem() throws ItemAlreadyReturnedException, ItemAlreadyCheckedOutException {
-        controller.returnABook(toRemoveBook.getName());
-        assertThat(toRemoveMovie.isCheckedOut(),is(equalTo(true)));
+    @Test(expected = InvalidUserOperationException.class)
+    public void cantReturnItemIfNotLoggedIn() throws ItemAlreadyReturnedException, InvalidUserOperationException, ItemAlreadyCheckedOutException {
+        login();
+        controllerMovies.checkOutAnItem(defaultMovie.getName(), defaultUser);
+        logout();
+        controllerMovies.returnAnItem(defaultMovie.getName(), defaultUser);
     }
 }

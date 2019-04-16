@@ -14,7 +14,7 @@ public class Utilities {
         }
     }
 
-    public static CheckableItem getRandomHashMapElement(HashMap<String, CheckableItem> hashmap) {
+    public static Object getRandomHashMapElement(HashMap<String, ? extends Object> hashmap) {
         return hashmap.get(hashmap.entrySet().iterator()
                 .next().getKey());
     }

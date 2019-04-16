@@ -2,6 +2,9 @@ package com.twu.biblioteca.Checkable;
 
 import com.twu.biblioteca.Exception.ItemAlreadyCheckedOutException;
 import com.twu.biblioteca.Exception.ItemAlreadyReturnedException;
+import com.twu.biblioteca.Exception.InvalidUserOperationException;
+import com.twu.biblioteca.Users.User;
+import com.twu.biblioteca.Users.UserController;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,34 +13,42 @@ import java.util.stream.Collectors;
 public class CheckableController {
 
     private HashMap<String, CheckableItem> checkables;
+    private final UserController userController;
 
-    public CheckableController(HashMap<String, CheckableItem> checkables) {
+    public CheckableController(HashMap<String, CheckableItem> checkables, UserController userController) {
         this.checkables = checkables;
+        this.userController = userController;
     }
 
-    public boolean canCheckOut(String checkableName) {
-        return checkables.containsKey(checkableName) && !checkables.get(checkableName).isCheckedOut();
+    public boolean canCheckOut(String checkableName,User user) {
+        return checkables.containsKey(checkableName) && !checkables.get(checkableName).isCheckedOut()
+                && (user==checkables.get(checkableName).getUser() || checkables.get(checkableName).getUser()==null);
     }
 
-    public void checkOutAnItem(String checkableName) throws ItemAlreadyCheckedOutException {
+    public void checkOutAnItem(String checkableName, User user) throws ItemAlreadyCheckedOutException, InvalidUserOperationException {
         CheckableItem m = checkables.get(checkableName);
+
         if (m.isCheckedOut()) {
             throw new ItemAlreadyCheckedOutException();
+        } else if ((m.getUser()!=null && m.getUser()!=user) || user != userController.getCurrentSignedInUser() || user ==null) {
+            throw new InvalidUserOperationException();
         } else {
-            m.setCheckedOut(true);
+            m.setCheckedOutUser(user);
         }
     }
 
-    public void returnAnItem(String checkableName) throws ItemAlreadyReturnedException {
+    public void returnAnItem(String checkableName, User user) throws ItemAlreadyReturnedException, InvalidUserOperationException {
         CheckableItem m = checkables.get(checkableName);
         if (!m.isCheckedOut()) {
             throw new ItemAlreadyReturnedException();
+        } else if ((m.getUser()!=user)|| user != userController.getCurrentSignedInUser()|| user ==null) {
+            throw new InvalidUserOperationException();
         } else {
-            m.setCheckedOut(false);
+            m.setCheckedOutUser(null);
         }
     }
 
-    public ArrayList<CheckableItem> getListOfCheckableItems(){
+    public ArrayList<CheckableItem> getListOfCheckableItems() {
         return checkables.values().stream().filter(i -> !i.isCheckedOut()).collect(Collectors.toCollection(ArrayList::new));
     }
 }

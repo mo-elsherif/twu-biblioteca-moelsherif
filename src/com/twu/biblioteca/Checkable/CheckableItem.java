@@ -1,14 +1,20 @@
 package com.twu.biblioteca.Checkable;
 
+import com.twu.biblioteca.Users.User;
+
 public abstract class CheckableItem {
 
     String name;
     int year;
-    boolean checkedOut;
+    private User userThatCheckedTheItemOut;
 
     public CheckableItem(String name, int year) {
         this.name = name;
         this.year = year;
+    }
+
+    public User getUser(){
+        return userThatCheckedTheItemOut;
     }
 
     public String getName() {
@@ -20,11 +26,11 @@ public abstract class CheckableItem {
     }
 
     public boolean isCheckedOut() {
-        return checkedOut;
+        return userThatCheckedTheItemOut!=null;
     }
 
-    public void setCheckedOut(boolean checkedOut) {
-        this.checkedOut = checkedOut;
+    public void setCheckedOutUser(User userThatCheckedTheItemOut) {
+        this.userThatCheckedTheItemOut = userThatCheckedTheItemOut;
     }
 
     public abstract String getItemName();
