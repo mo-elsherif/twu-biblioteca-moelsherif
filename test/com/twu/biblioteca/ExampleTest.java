@@ -4,6 +4,10 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import com.twu.biblioteca.Book.Book;
+import com.twu.biblioteca.Exception.ItemAlreadyCheckedOutException;
+import com.twu.biblioteca.Exception.ItemAlreadyReturnedException;
+import com.twu.biblioteca.Movie.Movie;
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -19,6 +23,7 @@ public class ExampleTest {
     static String indexQuit;
     static Book toRemoveBook;
     static Movie toRemoveMovie;
+    static Movie toRemoveMovieMap;
 
     @BeforeClass
     public static void setUp() {
@@ -26,12 +31,15 @@ public class ExampleTest {
         indexQuit = menuLength + ""; //because its always the last option
         toRemoveBook = BibliotecaApp.books.get(0);
         toRemoveMovie = BibliotecaApp.movies.get(0);
+        toRemoveMovieMap = (Movie) BibliotecaApp.moviesMap.get(BibliotecaApp.moviesMap.entrySet().iterator()
+                .next().getKey());
     }
 
     @After
     public void tearDown() {
         toRemoveBook.setCheckedOut(false);
         toRemoveMovie.setCheckedOut(false);
+        toRemoveMovieMap.setCheckedOut(false);
     }
 
     public ByteArrayInputStream addLineSeparatorBetweenWordsAndReturnByteArrayInputStream(String... inputs) {
@@ -49,7 +57,7 @@ public class ExampleTest {
         MOVIEBOOKING,
     }
 
-    public String[] applyConsoleCommands(Stage stage, String... args){
+    public String[] applyConsoleCommands(Stage stage, String... args) {
         ByteArrayInputStream inputStream = addLineSeparatorBetweenWordsAndReturnByteArrayInputStream(args);
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(bytes);
@@ -73,25 +81,25 @@ public class ExampleTest {
     }
 
     public String[] normalSetup(String... args) {
-        return applyConsoleCommands(Stage.BASIC,args);
+        return applyConsoleCommands(Stage.BASIC, args);
     }
 
     public String[] bookBookingNormalSetup(String... args) {
-        return applyConsoleCommands(Stage.BOOKBOOKING,args);
+        return applyConsoleCommands(Stage.BOOKBOOKING, args);
     }
 
     public String[] movieBookingNormalSetup(String... args) {
-        return applyConsoleCommands(Stage.MOVIEBOOKING,args);
+        return applyConsoleCommands(Stage.MOVIEBOOKING, args);
     }
 
     public String[] bookReturningNormalSetup(String... args) {
-        return applyConsoleCommands(Stage.BOOKRETURNING,args);
+        return applyConsoleCommands(Stage.BOOKRETURNING, args);
     }
 
     public String[] getPrintedBooksInAllBookOption() {
         ByteArrayOutputStream localBytes = new ByteArrayOutputStream();
         PrintStream localPrintStream = new PrintStream(localBytes);
-        Printer.printAllBooks(localPrintStream, BibliotecaApp.books);
+        PrinterClass.printAllBooks(localPrintStream, BibliotecaApp.books);
         return localBytes.toString().split("\n");
     }
 
@@ -173,7 +181,7 @@ public class ExampleTest {
     @Test
     public void successfullMessageOnBookReturn() {
         bookBookingNormalSetup(toRemoveBook.getName());
-        String[] strArr=bookReturningNormalSetup(toRemoveBook.getName());
+        String[] strArr = bookReturningNormalSetup(toRemoveBook.getName());
         boolean stateAfterReturning = toRemoveBook.isCheckedOut();
         assertThat(stateAfterReturning, is(equalTo(false)));
         assertThat(strArr[1], is(equalTo(
@@ -201,9 +209,48 @@ public class ExampleTest {
     }
 
     @Test
-    public void checkOutAMovie(){
+    public void checkOutAMovie() {
         String[] strArr = movieBookingNormalSetup(toRemoveMovie.getName());
         assertThat(strArr[1], is(equalTo(
                 "Thank you! Enjoy the movie")));
     }
+
+    @Test
+    public void checkableController() throws ItemAlreadyCheckedOutException {
+        CheckableController controller = new CheckableController(BibliotecaApp.moviesMap);
+        controller.checkOutAnItem(toRemoveMovieMap.getName());
+        assertThat(toRemoveMovieMap.isCheckedOut(), is(equalTo(true)));
+    }
+
+    @Test(expected = ItemAlreadyCheckedOutException.class)
+    public void cantCheckOutAlreadyCheckedOutItem() throws ItemAlreadyCheckedOutException {
+        toRemoveMovieMap.setCheckedOut(true);
+        CheckableController controller = new CheckableController(BibliotecaApp.moviesMap);
+        controller.checkOutAnItem(toRemoveMovieMap.getName());
+    }
+
+    @Test
+    public void canReturnAlreadyCheckedOutItem() throws ItemAlreadyReturnedException, ItemAlreadyCheckedOutException {
+        CheckableController controller = new CheckableController(BibliotecaApp.moviesMap);
+        controller.checkOutAnItem(toRemoveMovieMap.getName());
+        controller.returnAnItem(toRemoveMovieMap.getName());
+    }
+
+    @Test(expected = ItemAlreadyReturnedException.class)
+    public void cantReturnAlreadyReturnedItem() throws ItemAlreadyReturnedException {
+        CheckableController controller = new CheckableController(BibliotecaApp.moviesMap);
+        controller.returnAnItem(toRemoveMovieMap.getName());
+    }
+
+    @Test
+    public void getListOfAllItemsAndCheckOutAnItemAndMakeSureItsRemovedFromTheList() throws ItemAlreadyCheckedOutException {
+        CheckableController controller = new CheckableController(BibliotecaApp.moviesMap);
+        ArrayList<CheckableItem> items=controller.getListOfCheckableItems();
+        controller.checkOutAnItem(toRemoveMovieMap.getName());
+        ArrayList<CheckableItem> itemsAfterCheckOut=controller.getListOfCheckableItems();
+        items.removeAll(itemsAfterCheckOut);
+        assertThat(items.size(), is(equalTo(1)));
+        assertThat(items.get(0).getName(), is(equalTo(toRemoveMovieMap.getName())));
+    }
+
 }

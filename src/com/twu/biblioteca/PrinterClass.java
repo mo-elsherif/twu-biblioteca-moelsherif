@@ -1,11 +1,14 @@
 package com.twu.biblioteca;
 
+import com.twu.biblioteca.Book.Book;
+import com.twu.biblioteca.Movie.Movie;
+
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.function.ToIntFunction;
 
-public class Printer {
+public class PrinterClass {
 
     public static void printAllBooks(PrintStream out, ArrayList<Book> books) {
         int longestNameLength = computePropertyMaxLength(books, (ToIntFunction<? super Book>)
