@@ -224,4 +224,47 @@ public class ExampleTest {
     }
 
 
+
+    @Test
+    public void  loginUnsuccessfull(){
+        UserLoginMenuEntry menuEntry = new UserLoginMenuEntry(users);
+        menuEntry.execute(printStream, "XXX");
+        String[] strArr = bytes.toString().split("\n");
+        assertThat(strArr[0], is(equalTo(
+                "This user data is not valid")));
+    }
+
+    @Test
+    public void loginSuccesfull(){
+        UserLoginMenuEntry menuEntry = new UserLoginMenuEntry(users);
+        menuEntry.execute(printStream, "123-4567");
+        String[] strArr = bytes.toString().split("\n");
+        assertThat(strArr[0], is(equalTo(
+                "You have successfully signed in")));
+    }
+    
+    public void cantCheckOutAlreadyCheckedOutItem() throws ItemAlreadyCheckedOutException {
+        defaultUser.login();
+        controller.checkOutAnItem(toRemoveMovie.getName());
+        assertThat(toRemoveMovie.isCheckedOut(),is(equalTo(true)));
+    }
+
+    @Test(expected = UserNotLoggedInException.class)
+    public void canReturnAlreadyCheckedOutItem() throws ItemAlreadyReturnedException, ItemAlreadyCheckedOutException {
+        controller.checkOutAnItem(toRemoveMovie.getName());
+        assertThat(toRemoveMovie.isCheckedOut(),is(equalTo(true)));
+    }
+
+    @Test(expected = UserNotLoggedInException.class)
+    public void canReturnAlreadyCheckedOutItem() throws ItemAlreadyReturnedException, ItemAlreadyCheckedOutException {
+        defaultUser.login();
+        controller.returnABook(toRemoveBook.getName());
+        assertThat(toRemoveMovie.isCheckedOut(),is(equalTo(true)));
+    }
+
+    @Test(expected = UserNotLoggedInException.class)
+    public void canReturnAlreadyCheckedOutItem() throws ItemAlreadyReturnedException, ItemAlreadyCheckedOutException {
+        controller.returnABook(toRemoveBook.getName());
+        assertThat(toRemoveMovie.isCheckedOut(),is(equalTo(true)));
+    }
 }
