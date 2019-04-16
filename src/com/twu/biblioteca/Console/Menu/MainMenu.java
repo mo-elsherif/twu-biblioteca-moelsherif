@@ -13,6 +13,8 @@ import static com.twu.biblioteca.CheckableItemInteractiveConsole.handleCheckable
 
 public class MainMenu {
 
+
+
     public MenuItem[] getMenuItems() {
         return menuItems;
     }
@@ -68,7 +70,7 @@ public class MainMenu {
     public static Integer validInputWithErrorMessage(PrintStream out, Scanner scan, String[] menuOptions) {
 
         Integer nextLine = Utilities.tryParse(scan.nextLine());
-        if (nextLine == null || nextLine > menuOptions.length || nextLine <= 0) {
+        if (nextLine == null || nextLine > menuOptions.length || nextLine < 0) {
             out.println("Please select a valid option!");
             return null;
         }

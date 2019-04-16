@@ -13,17 +13,18 @@ public class ListAllMovies extends ListAllItems {
         super(checkableMap);
     }
 
-    public ArrayList<ArrayList<PrintableEntry>> getMoviePrintableEntries() {
+    public ArrayList<ArrayList<PrintableEntry>> getAllMapEntries() {
         ArrayList<ArrayList<PrintableEntry>> result = new ArrayList<>();
-        ArrayList<Movie> movies = (ArrayList) checkablesMovies.values();
+        HashMap<String, CheckableItem> movies= checkablesMovies;
 
-        int longestNameLength = computePropertyMaxLength(movies, ((ToIntFunction<? super Movie>)
+        int longestNameLength = computePropertyMaxLength(new ArrayList<> (movies.values()), ((ToIntFunction<? super Movie>)
                 (i -> i.getName().length())));
 
-        int longestDirectorLength = computePropertyMaxLength(movies, ((ToIntFunction<? super Movie>)
+        int longestDirectorLength = computePropertyMaxLength(new ArrayList<> (movies.values()), ((ToIntFunction<? super Movie>)
                 (i -> i.getDirector().length())));
 
-        for (Movie movie : movies) {
+        for (CheckableItem itm : movies.values()) {
+            Movie movie=(Movie) itm;
             if (movie.isCheckedOut()) {
                 continue;
             }

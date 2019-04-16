@@ -15,6 +15,11 @@ public class PrintableEntry {
     }
 
 
+    public String getName() {
+        return name;
+    }
 
-
+    public int getMaxLength() {
+        return maxLength;
+    }
 }

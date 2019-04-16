@@ -13,17 +13,18 @@ public class ListAllBooks extends ListAllItems {
         super(checkableMap);
     }
 
-    public ArrayList<ArrayList<PrintableEntry>> getBookPrintableEntries() {
+    public ArrayList<ArrayList<PrintableEntry>> getAllMapEntries() {
         ArrayList<ArrayList<PrintableEntry>> result = new ArrayList<>();
-        ArrayList<Book> books = (ArrayList) checkablesMovies.values();
+        HashMap<String, CheckableItem> books= checkablesMovies;
 
-        int longestNameLength = computePropertyMaxLength(books, ((ToIntFunction<? super Book>)
+        int longestNameLength = computePropertyMaxLength(new ArrayList<> (books.values()), ((ToIntFunction<? super Book>)
                 (i -> i.getName().length())));
 
-        int longestAuthorLength = computePropertyMaxLength(books, ((ToIntFunction<? super Book>)
+        int longestAuthorLength = computePropertyMaxLength(new ArrayList<> (books.values()), ((ToIntFunction<? super Book>)
                 (i -> i.getAuthor().length())));
 
-        for (Book book : books) {
+        for (CheckableItem itm : books.values()){
+            Book book=(Book) itm;
             if (book.isCheckedOut()) {
                 continue;
             }

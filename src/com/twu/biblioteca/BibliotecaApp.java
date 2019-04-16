@@ -27,6 +27,7 @@ public class BibliotecaApp {
 
     public static void main(String... args) {
         ConsoleApplication x = new ConsoleApplication(new MainMenu(),System.out,new Scanner(System.in));
+        x.interactiveLoop();
         printConsoleMessages(System.out, System.in);
     }
 
