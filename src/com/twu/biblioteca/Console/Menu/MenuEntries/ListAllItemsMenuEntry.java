@@ -12,8 +12,8 @@ import java.util.function.ToIntFunction;
 
 public abstract class ListAllItemsMenuEntry extends MenuEntry {
 
-    HashMap<String, CheckableItem> checkables;
-    PrinterFormat printerFormat = new PrinterFormat();
+    private HashMap<String, CheckableItem> checkables;
+    private PrinterFormat printerFormat = new PrinterFormat();
 
     public ListAllItemsMenuEntry(HashMap<String, CheckableItem> checkableMap) {
         this.checkables = checkableMap;

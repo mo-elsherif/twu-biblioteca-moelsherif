@@ -14,7 +14,6 @@ public class ListAllBooksMenuEntry extends ListAllItemsMenuEntry {
         super(checkableMap);
     }
 
-
     public ArrayList<PrintableEntry> getBookPrintableEntries(CheckableItem item) {
         Book book = (Book) item;
         IntTuple nameAndAuthorMaxLength = getMoviesNameAndDirectMaxLength();

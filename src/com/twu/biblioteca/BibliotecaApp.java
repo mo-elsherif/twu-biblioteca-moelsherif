@@ -15,7 +15,6 @@ import java.util.Scanner;
 public class BibliotecaApp {
 
     public static HashMap<String, CheckableItem> movies = MovieFactory.createHardCodedMoviesMap();
-
     public static HashMap<String, CheckableItem> books = BookFactory.createHardCodedBooksMap();
     public static HashMap<String, User> users = UserFactory.createHardCodedUsers();
 

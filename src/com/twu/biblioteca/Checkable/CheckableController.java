@@ -25,12 +25,16 @@ public class CheckableController {
                 && (user==checkables.get(checkableName).getUser() || checkables.get(checkableName).getUser()==null);
     }
 
+    public boolean UserIsNullOrNotSignedIn(User user){
+        return user != userController.getCurrentSignedInUser() || user ==null;
+    }
+
     public void checkOutAnItem(String checkableName, User user) throws ItemAlreadyCheckedOutException, InvalidUserOperationException {
         CheckableItem m = checkables.get(checkableName);
 
         if (m.isCheckedOut()) {
             throw new ItemAlreadyCheckedOutException();
-        } else if ((m.getUser()!=null && m.getUser()!=user) || user != userController.getCurrentSignedInUser() || user ==null) {
+        } else if ((m.getUser()!=null && m.getUser()!=user) || UserIsNullOrNotSignedIn(user)) {
             throw new InvalidUserOperationException();
         } else {
             m.setCheckedOutUser(user);
@@ -41,7 +45,7 @@ public class CheckableController {
         CheckableItem m = checkables.get(checkableName);
         if (!m.isCheckedOut()) {
             throw new ItemAlreadyReturnedException();
-        } else if ((m.getUser()!=user)|| user != userController.getCurrentSignedInUser()|| user ==null) {
+        } else if ((m.getUser()!=user)|| UserIsNullOrNotSignedIn(user)) {
             throw new InvalidUserOperationException();
         } else {
             m.setCheckedOutUser(null);

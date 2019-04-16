@@ -55,8 +55,8 @@ public class ExampleTest {
         movies = BibliotecaApp.movies;
         users = BibliotecaApp.users;
         controllerUsers = new UserController(users);
-        controllerMovies = new CheckableController(movies,controllerUsers);
-        controllerBooks = new CheckableController(books,controllerUsers);
+        controllerMovies = new CheckableController(movies, controllerUsers);
+        controllerBooks = new CheckableController(books, controllerUsers);
 
         defaultBook = (Book) Utilities.getRandomHashMapElement(books);
         defaultMovie = (Movie) Utilities.getRandomHashMapElement(movies);
@@ -76,12 +76,19 @@ public class ExampleTest {
         logout();
     }
 
+    public void login() {
+        controllerUsers.logIn(defaultUser.getUserId(), defaultUser.getPassword());
+    }
+
+    private void logout() {
+        controllerUsers.logOut();
+    }
 
 
     @Test
     public void checkableController() throws ItemAlreadyCheckedOutException, InvalidUserOperationException {
         login();
-        CheckableController controller = new CheckableController(movies,controllerUsers);
+        CheckableController controller = new CheckableController(movies, controllerUsers);
         controller.checkOutAnItem(defaultMovie.getName(), defaultUser);
         assertThat(defaultMovie.isCheckedOut(), is(equalTo(true)));
     }
@@ -90,14 +97,14 @@ public class ExampleTest {
     public void cantCheckOutAlreadyCheckedOutItem() throws ItemAlreadyCheckedOutException, InvalidUserOperationException {
         login();
         defaultMovie.setCheckedOutUser(defaultUser);
-        CheckableController controller = new CheckableController(movies,controllerUsers);
+        CheckableController controller = new CheckableController(movies, controllerUsers);
         controller.checkOutAnItem(defaultMovie.getName(), defaultUser);
     }
 
     @Test
     public void canReturnAlreadyCheckedOutItem() throws ItemAlreadyReturnedException, ItemAlreadyCheckedOutException, InvalidUserOperationException {
         login();
-        CheckableController controller = new CheckableController(movies,controllerUsers);
+        CheckableController controller = new CheckableController(movies, controllerUsers);
         controller.checkOutAnItem(defaultMovie.getName(), defaultUser);
         controller.returnAnItem(defaultMovie.getName(), defaultUser);
     }
@@ -105,14 +112,14 @@ public class ExampleTest {
     @Test(expected = ItemAlreadyReturnedException.class)
     public void cantReturnAlreadyReturnedItem() throws ItemAlreadyReturnedException, InvalidUserOperationException {
         login();
-        CheckableController controller = new CheckableController(movies,controllerUsers);
+        CheckableController controller = new CheckableController(movies, controllerUsers);
         controller.returnAnItem(defaultMovie.getName(), defaultUser);
     }
 
     @Test
     public void getListOfAllItemsAndCheckOutAnItemAndMakeSureItsRemovedFromTheList() throws ItemAlreadyCheckedOutException, InvalidUserOperationException {
         login();
-        CheckableController controller = new CheckableController(movies,controllerUsers);
+        CheckableController controller = new CheckableController(movies, controllerUsers);
         ArrayList<CheckableItem> items = controller.getListOfCheckableItems();
         controller.checkOutAnItem(defaultMovie.getName(), defaultUser);
         ArrayList<CheckableItem> itemsAfterCheckOut = controller.getListOfCheckableItems();
@@ -226,7 +233,6 @@ public class ExampleTest {
     @Test
     public void checkNumberOfLinesPrintedInAllBooksPrintISEqualToNumberOfBooks() {
         ListAllBooksMenuEntry menuEntry = new ListAllBooksMenuEntry(books);
-        PrinterFormat x = new PrinterFormat();
         ArrayList<ArrayList<PrintableEntry>> allMapEntries = menuEntry.getAllMapEntries();
         assertThat(allMapEntries.size(), is(equalTo(books.size())));
     }
@@ -241,18 +247,11 @@ public class ExampleTest {
         assertThat(elmInfo, CoreMatchers.containsString(defaultMovie.getDirector()));
     }
 
-    public void login() {
-        controllerUsers.logIn(defaultUser.getUserId(), defaultUser.getPassword());
-    }
-
-    private void logout() {
-        controllerUsers.logOut();
-    }
 
     @Test
     public void loginUnsuccessfull() {
-        UserLoginMenuEntry menuEntry = new UserLoginMenuEntry(users,controllerUsers);
-        menuEntry.execute(printStream, "XXX","");
+        UserLoginMenuEntry menuEntry = new UserLoginMenuEntry(users, controllerUsers);
+        menuEntry.execute(printStream, "XXX", "");
         String[] strArr = bytes.toString().split("\n");
         assertThat(strArr[0], is(equalTo(
                 "This user data is not valid. Please type your info again.")));
@@ -260,7 +259,7 @@ public class ExampleTest {
 
     @Test
     public void loginSuccesfull() {
-        UserLoginMenuEntry menuEntry = new UserLoginMenuEntry(users,controllerUsers);
+        UserLoginMenuEntry menuEntry = new UserLoginMenuEntry(users, controllerUsers);
         menuEntry.execute(printStream, "123-4567", "abcde");
         String[] strArr = bytes.toString().split("\n");
         assertThat(strArr[0], is(equalTo(

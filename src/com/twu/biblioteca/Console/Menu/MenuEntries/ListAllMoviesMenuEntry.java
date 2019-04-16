@@ -32,7 +32,6 @@ public class ListAllMoviesMenuEntry extends ListAllItemsMenuEntry {
     public IntTuple getMoviesNameAndDirectMaxLength() {
         int longestNameLength = computePropertyMaxLength(((ToIntFunction<? super Movie>)
                 (i -> i.getName().length())));
-
         int longestDirectorLength = computePropertyMaxLength(((ToIntFunction<? super Movie>)
                 (i -> i.getDirector().length())));
         return new IntTuple(longestNameLength, longestDirectorLength);

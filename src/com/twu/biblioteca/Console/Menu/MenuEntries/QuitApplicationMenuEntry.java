@@ -10,8 +10,6 @@ public class QuitApplicationMenuEntry extends MenuEntry {
 
     @Override
     public void execute(PrintStream printStream, Scanner scan) throws QuitApplicationException {
-
         throw new QuitApplicationException();
-
     }
 }
