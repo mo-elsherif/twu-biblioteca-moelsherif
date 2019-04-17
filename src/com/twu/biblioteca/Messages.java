@@ -19,5 +19,4 @@ public class Messages {
     public static String notValidForReturnMessage(String itemName){
         return "This is not a valid " + itemName + " for return.";
     }
-
 }

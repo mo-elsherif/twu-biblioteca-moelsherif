@@ -25,9 +25,7 @@ public class CheckoutACheckableItemMenuEntry extends MenuEntry {
         this.userController = userController;
     }
 
-
     public boolean execute(PrintStream printStream, String input) {
-
         CheckableItem item = checkablesMap.get(input);
         if(item!=null && controllerItems.canCheckOut(item.getName(),userController.getCurrentSignedInUser()))
         {

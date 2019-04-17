@@ -15,6 +15,8 @@ import com.twu.biblioteca.Checkable.CheckableItem;
 import com.twu.biblioteca.Console.ConsoleApplication;
 import com.twu.biblioteca.Console.Menu.MainMenu;
 import com.twu.biblioteca.Console.Menu.MenuEntries.*;
+
+import com.twu.biblioteca.Console.Menu.MenuItem;
 import com.twu.biblioteca.Exception.InvalidUserOperationException;
 import com.twu.biblioteca.Exception.ItemAlreadyCheckedOutException;
 import com.twu.biblioteca.Exception.ItemAlreadyReturnedException;
@@ -31,6 +33,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static com.twu.biblioteca.BibliotecaApp.startApp;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
@@ -48,13 +51,15 @@ public class ExampleTest {
     private static ByteArrayOutputStream bytes;
     private static PrintStream printStream;
     private static HashMap<String, User> users;
+    private static MainMenu mainMenu;
 
     @BeforeClass
     public static void setUp() {
         books = BibliotecaApp.books;
         movies = BibliotecaApp.movies;
         users = BibliotecaApp.users;
-        controllerUsers = new UserController(users);
+        mainMenu = new MainMenu();
+        controllerUsers = new UserController(users, mainMenu);
         controllerMovies = new CheckableController(movies, controllerUsers);
         controllerBooks = new CheckableController(books, controllerUsers);
 
@@ -132,7 +137,7 @@ public class ExampleTest {
     @Test
     public void testWelcomeMessageAndQuitApplication() {
         MainMenu menu = new MainMenu();
-        int quitIndex = menu.getMenuItems().length - 1; //should be the last one
+        int quitIndex = menu.getActiveMenuItems().size() - 1; //should be the last one
         InputStream stream = new ByteArrayInputStream((quitIndex + "").getBytes());
         startApp(menu, printStream, new Scanner(stream));
         String[] strArr = bytes.toString().split("\n");
@@ -272,10 +277,32 @@ public class ExampleTest {
     }
 
     @Test(expected = InvalidUserOperationException.class)
-    public void cantReturnItemIfNotLoggedIn() throws ItemAlreadyReturnedException, InvalidUserOperationException, ItemAlreadyCheckedOutException {
+    public void cantReturnItemIfNotLoggedIn() throws ItemAlreadyReturnedException, InvalidUserOperationException,
+            ItemAlreadyCheckedOutException {
         login();
         controllerMovies.checkOutAnItem(defaultMovie.getName(), defaultUser);
         logout();
         controllerMovies.returnAnItem(defaultMovie.getName(), defaultUser);
+    }
+
+    @Test
+    public void mainMenuGettingOneMoreOptionAfterSigningIn() {
+        ArrayList<MenuItem> menuItemsBeforeLogin = mainMenu.getActiveMenuItems();
+        login();
+        ArrayList<MenuItem> menuItemsAfterLogin = mainMenu.getActiveMenuItems();
+        menuItemsAfterLogin.removeAll(menuItemsBeforeLogin);
+        assertThat(menuItemsAfterLogin.size(), is(equalTo(1)));
+        assertThat(menuItemsAfterLogin.get(0).getMenuEntry(), instanceOf(ViewUserInfoMenuEntry.class));
+
+    }
+
+    @Test
+    public void checkInfoInMenu() {
+        login();
+        ViewUserInfoMenuEntry menuEntry = new ViewUserInfoMenuEntry(controllerUsers);
+        String s = menuEntry.getUserInfo();
+        assertThat(s, CoreMatchers.containsString(defaultUser.getName()));
+        assertThat(s, CoreMatchers.containsString(defaultUser.getEmail()));
+        assertThat(s, CoreMatchers.containsString(defaultUser.getPhoneNumber()));
     }
 }

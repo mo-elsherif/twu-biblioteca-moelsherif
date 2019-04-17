@@ -33,6 +33,4 @@ public class ListAllBooksMenuEntry extends ListAllItemsMenuEntry {
                 (i -> i.getAuthor().length())));
         return new IntTuple(longestNameLength, longestAuthorLength);
     }
-
-
 }

@@ -20,5 +20,4 @@ public class PrintableEntry {
     public int getMaxLength() {
         return maxLength;
     }
-
 }
